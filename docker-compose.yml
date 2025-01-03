@@ -1,0 +1,119 @@
+version: '3.8'
+services:
+  cocos-api:
+    build:
+      context: ./cocos-api
+      dockerfile: Dockerfile
+    ports:
+      - "${COCOS_API_PORT}:8080"
+    # depends_on:
+    #   database:
+    #     condition: service_healthy
+    networks:
+      - common-net
+    environment:
+      PORT: ${COCOS_API_PORT}
+      DB_PORT: ${DB_PORT}
+      DB_HOST: ${DB_HOST}
+      DB_NAME: ${DB_NAME}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      NODE_ENV: ${NODE_ENV}
+  money-orders-ms:
+    build:
+      context: ./money-orders-ms
+      dockerfile: Dockerfile
+    ports:
+      - "${MONEY_ORDERS_MS_PORT}:8080"
+    # depends_on:
+    #   database:
+    #     condition: service_healthy
+    networks:
+      - common-net
+    environment:
+      PORT: ${MONEY_ORDERS_MS_PORT}
+      DB_PORT: ${DB_PORT}
+      DB_HOST: ${DB_HOST}
+      DB_NAME: ${DB_NAME}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      NODE_ENV: ${NODE_ENV}
+  order-validation-ms:
+    build:
+      context: ./order-validation-ms
+      dockerfile: Dockerfile
+    ports:
+      - "${ORDER_VALIDATION_MS_PORT}:8080"
+    # depends_on:
+    #   database:
+    #     condition: service_healthy
+    networks:
+      - common-net
+    environment:
+      PORT: ${ORDER_VALIDATION_MS_PORT}
+      DB_PORT: ${DB_PORT}
+      DB_HOST: ${DB_HOST}
+      DB_NAME: ${DB_NAME}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      NODE_ENV: ${NODE_ENV}
+  portfolio-ms:
+    build:
+      context: ./portfolio-ms
+      dockerfile: Dockerfile
+    ports:
+      - "${PORTFOLIO_MS_PORT}:8080"
+    # depends_on:
+    #   database:
+    #     condition: service_healthy
+    networks:
+      - common-net
+    environment:
+      PORT: ${PORTFOLIO_MS_PORT}
+      DB_PORT: ${DB_PORT}
+      DB_HOST: ${DB_HOST}
+      DB_NAME: ${DB_NAME}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      NODE_ENV: ${NODE_ENV}
+  order-matching-ms:
+    build:
+      context: ./order-matching-ms
+      dockerfile: Dockerfile
+    ports:
+      - "${ORDER_MATCHING_MS_PORT}:8080"
+    # depends_on:
+    #   database:
+    #     condition: service_healthy
+    networks:
+      - common-net
+    environment:
+      PORT: ${ORDER_MATCHING_MS_PORT}
+      DB_PORT: ${DB_PORT}
+      DB_HOST: ${DB_HOST}
+      DB_NAME: ${DB_NAME}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      NODE_ENV: ${NODE_ENV}
+  information-ms:
+    build:
+      context: ./information-ms
+      dockerfile: Dockerfile
+    ports:
+      - "${INFORMATION_MS_PORT}:8080"
+    # depends_on:
+    #   database:
+    #     condition: service_healthy
+    networks:
+      - common-net
+    environment:
+      PORT: ${INFORMATION_MS_PORT}
+      DB_PORT: ${DB_PORT}
+      DB_HOST: ${DB_HOST}
+      DB_NAME: ${DB_NAME}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      NODE_ENV: ${NODE_ENV}
+
+networks:
+  common-net: {}
