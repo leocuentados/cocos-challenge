@@ -1,0 +1,2 @@
+DELETE FROM public.orders
+WHERE status NOT IN ('REJECTED', 'CANCELLED', 'FILLED');
