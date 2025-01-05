@@ -1,16 +1,14 @@
 import dotenv from "dotenv";
 import express, { NextFunction, urlencoded } from "express"; 
 import morgan from "morgan";
-import { CustomError, exceptionHandler, routeNotFoundHandler } from "./config/exception-handler";
-import { Request, Response } from "express";
+import { exceptionHandler, routeNotFoundHandler } from "./config/exception-handler";
 import router from "./config/routes";
-import { AxiosError } from "axios";
 
 dotenv.config();
 
 export const app = express();
 
-const PORT = process.env.PORT || 3000;  // Asegura un valor por defecto
+const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(urlencoded({ extended: true }));

@@ -9,5 +9,14 @@ export const environment = {
         password: process.env.DB_PASSWORD || 'Dkqcim9wd3l9jOcD-LGyV2QEd8IrodM4',
         database: process.env.DB_NAME || 'quykvkaz',
     },
+    aws: {
+        region: process.env.AWS_REGION || 'us-east-1',
+        access_key_id: process.env.AWS_ACCESS_KEY_ID || 'mockKeyId',
+        secret_access_key: process.env.AWS_SECRET_ACCESS_KEY || 'mockSecretKey',
+    },
+    sqs: {
+        url: process.env.AWS_SQS_URL || 'http://sqs.us-east-1.localhost.localstack.cloud:4566',
+        portfolio_ms_url: process.env.PORTFOLIO_MS_SQS_URL || 'http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/portfolio-ms-queue',
+    },
     node_env: process.env.NODE_ENV,
 }

@@ -7,7 +7,7 @@ export class Order {
     @Column({ name: 'instrumentid' })
     instrumentId: number;
     @Column({ name: 'userid' })
-    userid: number;
+    userId: number;
     @Column()
     size: number;
     @Column()

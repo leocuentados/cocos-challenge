@@ -1,40 +1,25 @@
 import dotenv from "dotenv";
-import "reflect-metadata";
-import { DbInstance } from "./config/db";
-import express, { Request as ExRequest, Response as ExResponse, NextFunction, urlencoded } from "express"; 
+import express, { urlencoded } from "express"; 
 import morgan from "morgan";
-import { exceptionHandler, notFoundHandler } from "./config/exception-handler";
-
-export const app = express();
-const NODE_ENV = process.env.NODE_ENV;
+import { exceptionHandler, routeNotFoundHandler } from "./config/exception-handler";
+import router from "./config/routes";
 
 dotenv.config();
 
-const PORT = process.env.PORT;
+export const app = express();
 
-async function main() {
-  console.log("Initializing server at: ", NODE_ENV);
+const PORT = process.env.PORT || 3000;
 
-  await DbInstance.initialize()
-  app.use(
-    urlencoded({
-      extended: true,
-    })
-  );
-  app.use(express.json())
-  app.use(morgan("tiny"));
+app.use(express.json());
+app.use(urlencoded({ extended: true }));
+app.use(morgan('tiny'));
 
-  app.use((_req: ExRequest, res: ExResponse) => notFoundHandler(_req, res))
+app.use('/api', router); 
+app.use(routeNotFoundHandler);
+app.use(exceptionHandler);
 
-  app.use((err: unknown, req: ExRequest, res: ExResponse, next: NextFunction) => {
-    return exceptionHandler(err, req, res, next);
-  })
-
-  app.listen(PORT, () => { 
-    console.log("Server running at PORT: ", PORT); 
-  }).on("error", (error) => {
-    throw new Error(error.message);
-  });
-}
-
-main();
+app.listen(PORT, () => {
+  console.log(`Server running at PORT: ${PORT}`);
+}).on('error', (error) => {
+  throw new Error(error.message);
+});

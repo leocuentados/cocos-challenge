@@ -1,38 +1,30 @@
 import { AxiosError } from "axios";
-import { NextFunction, Request as ExRequest, Response as ExResponse } from "express";
 
-export const exceptionHandler = (
-    err: unknown,
-    req: ExRequest,
-    res: ExResponse,
-    next: NextFunction
-  ): ExResponse | void => {
-    if (err instanceof AxiosError) {
-      console.warn(`Caught Error for ${req.path}:`, err.cause);
-      return res.status(err.status!).json({
-        message: err.message,
-      });
-    }
-    if (err instanceof CustomError) {
-      return res.status(err.status).json({
-        message: err.error.message
-      });
-    } else {
-      res.status(500).json({
-        message: "Internal Server Error",
-      });
-    }
+export const exceptionHandler = (error, req, res, next) => {
+  if (error instanceof AxiosError) {
+    console.warn(`Caught Error for ${req.path}:`, error.cause);
+    return res.status(error.code === 'ECONNREFUSED' ? 503 : error.response?.status || 500).json({
+      message: error.message,
+    });
+  }
 
-    next();
+  if (error instanceof CustomError) {
+    return res.status(error.status).json({
+      message: error.error.message,
+    });
+  }
+  
+  res.status(500).json({
+    message: 'Internal Server Error',
+  });
+};
+
+export const createCustomError = (status: number, message: string) => {
+  return new CustomError(status, Error(message))
 }
 
-export const customError = (status: number, message: string) => {
-  const customErr = new CustomError(status, Error(message))
-  throw customErr
-}
-
-export const notFoundHandler = (_req, res: ExResponse) => {
-    res.status(404).send({
+export const routeNotFoundHandler = (_req, res) => {
+    res.status(404).json({
       message: "Not Found",
     });
 }
