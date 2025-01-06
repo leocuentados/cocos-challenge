@@ -25,7 +25,18 @@
 - Para el challenge adicionalmente hay que popular la dynamo por primera vez a partir de las ordenes que ya fueron ejecutadas, esto se hace a partir de un proceso que ocurre en `information-ms` la primera vez que inicia el servicio y que genera los eventos necesarios para llenar la tabla ya que a causa de que la dynamo esta dentro de un container de localstack el mismo no persiste data. En un escenario normal se deberia ejecutar el mismo proceso una sola vez por fuera del sistema y que no dependa del inicio del servicio.
 
 ### Crear ordenes
-- WIP
+- Mediante `cocos-api` hacemos una solicitud de creacion de orden. Este mismo pasa la solicitud a `order-validation-ms` el cual verifica que la orden efectivamente pueda ser creada (es decir, que tenga la cantidad suficiente del instrumento en su portfolio en una venta o que tenga el dinero disponible para la compra). Para esta verificacion consulta el `portfolio-ms` y dependiendo el resultado genera o no eventos. Posteriormente en los pasos siguientes el resultado se vera impactado en el portfolio si la orden fue aceptada.
+- El `order-matching-ms` escucha eventos generados por el servicio de validacion con informacion para crear una orden e intentar matchear compras y ventas, dependiendo la orden:
+    - El matcheo de ordenes se realiza con una nueva tabla `pending_orders` en postgreSQL, la cual es identica a la tabla `orders` provista pero con una columna más usada para matcheo de ordenes parciales llamada `pending_partial` de tipo booleano.
+    - Las operaciones contra la nueva tabla se realizan con la opcion `FOR UPDATE SKIP LOCKED ` que marca las ordenes en una seleccion como bloqueadas para escritura y lectura, esto evita que dos ordenes entrantes al mismo tiempo intenten usar las mismas ordenes. Adicionalmente la tabla se configuro con la opcion `SET lock_timeout = '1s';` para que el bloqueo dure como maximo 1 segundo y mejorar la performance.
+    - Si las ordenes son de tipo `MARKET` entonces se intentara ejecutar inmediatamente. Esto quiere decir, si logra matchear con el lado opuesto de la operacion, marcara la operacion como `FILLED`, de lo contrario si no puede hacerlo la marca como `REJECTED`.
+    - Si las ordenes son de tipo `LIMIT` entonces intentara matchear con el lado opuesto de la operacion. Si se completa el match entonces todas las ordenes con las que matcheo son borradas de la tabla, en el caso de que no se complete entonces se inserta la orden en la tabla con el status `NEW` y las ordenes con las que intento matchear pero no logro completar son marcadas con `pending_partial` en true para evitar que sean usadas en otro match, las mismas seran ejecutadas en la medida de que aparezcan ordenes que completen los parciales.
+    - Las ordenes que logran efectivamente matchear (o tambien si fueron rechazadas) son enviadas a traves de un evento a otra SQS.
+    - Si las ordenes son de side `BUY` entonces prioriza la busqueda a partir del precio mas barato disponible. Adicionalmente si son de tipo `LIMIT` intentara matchear con las ordenes que tengan un precio igual o inferior al precio limite.
+    - Si las ordenes son de side `SELL` entonces prioriza la busqueda a partir del precio mas caro disponible. Adicionalmente si son de tipo `LIMIT` intentara matchear con las ordenes que tengan un precio igual o superior al precio limite.
+- El `information-ms` escucha los eventos enviados a la SQS del servicio de matcheo y con ello
+    - persiste las ordenes y genera eventos de la manera descrita en la funcionalidad de portfolio en el caso de ordenes ejecutadas.
+    - a partir de las ordenes ejecutadas se crean tambien ordenes CASH-IN/CASH-OUT segun los movimientos de dinero que ocurren a partir de estos. A su vez tambien son enviados hacia `portfolio-ms`.
 
 # FAQ
 **Por que el Marketdata no se actualiza a medida que ocurren compras y ventas?**
@@ -33,3 +44,7 @@
 
 **Por que el precio actual de cada activo se calcula con el ultimo valor de cierre?**
 - Incluido tambien en la solicitud de no simular el comportamiento del mercado y al no disponer de la unidad de tiempo en la cual ocurriran las operaciones, decidi no usar los valores de open/high/low del marketdata y simplemente usar el close. En otra iteracion se puede, usando una unidad de tiempo, detectar si el calculo de precio de activos debe hacerse dentro de horario de mercado (usando open/high/low) o fuera (usando close).
+
+**Por que la busqueda de instrumentos busca como maximo 10 en total y maximo 5 por ticker o por nombre?**
+- En la practica cuanto mas exacto sea el parametro de busqueda entonces menos resultados aparecen (hasta llegar al instrumento exacto buscado). Como la busqueda probablemente se use en una app de manera en la que a medida que escriba la persona debe poder ver resultados, implicitamente se espera que el endpoint responda rapido, es por esto que hay que poner un limite en la cantidad de resultados para mejorar la performance.
+- El limite de hasta 5 y hasta 10 es arbitrario y puede cambiarse en la medida que se requiera.
