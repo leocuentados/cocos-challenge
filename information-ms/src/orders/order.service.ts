@@ -33,30 +33,75 @@ export class OrderService {
       return this.sqsProducer.send({ id: uuidv4(), body: messageBody });
     }
 
+    public async sendPortfolioQueueMessage(orders: Order[]) {
+          const cashInOrder: Order[] = orders
+              .filter(order => order.side === 'CASH_IN')
+
+              if (cashInOrder.length > 0) {
+                cashInOrder
+                  .reduce((accumulator, currentOrder) => {
+                    accumulator.size += currentOrder.size;
+                    return accumulator;
+                  });
+              }
+
+              const cashOutOrder: Order[] = orders
+                .filter(order => order.side === 'CASH_OUT')
+
+              if (cashOutOrder.length > 0) {
+                cashOutOrder
+                .reduce((accumulator, currentOrder) => {
+                    accumulator.size += currentOrder.size;
+                    return accumulator;
+                  });
+              }
+
+
+          const buyOrders: Order[] = orders.filter(order => order.side === 'BUY' && order.status === 'FILLED');
+          const sellOrders: Order[] = orders.filter(order => order.side === 'SELL' && order.status === 'FILLED');
+  
+          const messageOrders = 
+              cashInOrder
+                .concat(cashOutOrder)
+                .concat(buyOrders)
+                .concat(sellOrders);
+  
+          if (messageOrders.length > 0) {
+              await this.sendMessage(JSON.stringify({
+                  orders: messageOrders
+              }));
+              console.info(`[OrderService] portfolio queue message sent for user ${orders[0].userId}`)
+          }
+    }
+
     public findAllByUserId(userId: number): Promise<Order[]> {
       return this.orderRepository.find({ where: { userId: userId } })
     }
 
-    public async createCashOrder(userId: number, side: OrderSide, price: number): Promise<Order> {
+    public async createCashOrder(userId: number, side: OrderSide, size: number): Promise<Order> {
       if (OrderSide.CASH_OUT === side) {
         const cashOutOrders = await this.orderRepository.find({ where: { userId: userId, side: OrderSide.CASH_IN.toString() } })
         const previousCash = cashOutOrders.reduce((accumulator, currentOrder) => {
           return accumulator + currentOrder.size;
         }, 0);
 
-        if (previousCash < price) {
+        if (previousCash < size) {
           throw new HttpException('La cantidad solicitada es menor al monto disponible', HttpStatus.BAD_REQUEST)
         }
       }
 
-      return this.orderRepository.create({
+      const order = this.orderRepository.create({
         userId: userId,
         instrumentId: 1,
         side: side.toString(),
-        price: price,
-        size: 1,
+        price: 1,
+        size: size,
         status: OrderStatus.FILLED.toString(),
         datetime: new Date()
-      })
+      });
+
+      await this.sendPortfolioQueueMessage([order]);
+
+      return order;
     }
 }

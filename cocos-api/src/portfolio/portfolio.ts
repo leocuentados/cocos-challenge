@@ -1,3 +1,5 @@
+import { CreateOrderDto } from "../order/create-order.dto";
+
 export class Portfolio {
     userId: string;
     portfolioId: string;
@@ -9,36 +11,35 @@ export class Portfolio {
         userId: string, 
         portfolioId: string, 
         availableMoneyAmount: number, 
+        currentPrice: number,
         instruments: InstrumentMarketData[]) {
         this.userId = userId;
         this.portfolioId = portfolioId;
         this.availableMoneyAmount = availableMoneyAmount;
-        this.instruments = instruments.map(instrument => this.getInstrumentWithCalculatedBalance(instrument));
-        this.currentPrice = this.calculateCurrentPrice();
+        this.instruments = instruments;
+        this.currentPrice = currentPrice;
     }
 
-    public getInstrument(instrumentId: string): InstrumentMarketData | null {
-        return this.instruments.find(instrument => instrument.instrumentId === instrumentId) || null;
+    getInstrument(instrumentId: number): InstrumentMarketData | null {
+        return this.instruments.find(i => i.instrumentId === instrumentId) || null
     }
 
-    public getCurrentPrice(): number {
-        return this.currentPrice;
-    }
-
-    private calculateCurrentPrice(): number {
-        return this.instruments.reduce((acc, instrument) => acc + (instrument.quantity * instrument.currentPrice), 0) + this.availableMoneyAmount;
-    }
-
-    private getInstrumentWithCalculatedBalance(instrument: InstrumentMarketData): InstrumentMarketData {
-        instrument.balance = ((instrument.currentPrice - instrument.originalPrice) / instrument.originalPrice) * 100;
-        return instrument;
+    canCreateOrder(createOrderDto: CreateOrderDto): boolean {
+        if (createOrderDto.side === 'BUY') {
+            return this.availableMoneyAmount - createOrderDto.price >= 0;
+        } else {
+            const instrument = this.getInstrument(createOrderDto.instrumentId);
+            return !!instrument && instrument.quantity - createOrderDto.size >= 0;
+        }
     }
 }
 
 interface InstrumentMarketData { 
-    instrumentId: string; 
+    instrumentId: number; 
     quantity: number; 
     originalPrice: number; 
     currentPrice: number; 
-    balance?: number;
+    previousPrice: number;
+    balance: number;
+    dailyBalance: number;
 }

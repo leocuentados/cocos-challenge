@@ -3,7 +3,7 @@ import { PortfolioClient } from "./portfolio.client";
 
 export class PortfolioService {
     constructor(private portfolioClient: PortfolioClient) {}
-    get(userId: string): Promise<Portfolio> {
+    get(userId: number): Promise<Portfolio> {
         return this.portfolioClient.get(userId);
     }
 }

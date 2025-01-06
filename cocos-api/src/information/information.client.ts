@@ -1,6 +1,7 @@
 import axios from "axios";
 import { CustomError } from "../config/exception-handler";
 import { Instrument } from "./instrument";
+import { User } from "./user";
 
 export class InformationClient {
     private baseUrl: string;
@@ -13,12 +14,16 @@ export class InformationClient {
     }
 
     async searchInstrument(searchParam: string): Promise<Instrument[]> {
-        const response = (await axios.get(`${this.baseUrl}/instruments/search?=ticker=${searchParam}&name=${searchParam}`)).data;
-        return response.instruments.map((instrument: any) => new Instrument(
+        const response = (await axios.get(`${this.baseUrl}/instruments/search?searchParam=${searchParam}`)).data;
+        return response.length > 0 ? response.map((instrument: any) => new Instrument(
             instrument.id,
             instrument.ticker,
             instrument.name,
             instrument.type
-        ));
+        )) : [];
+    }
+
+    async getUserById(userId: number): Promise<User | null> {
+        return (await axios.get(`${this.baseUrl}/users/${userId}`)).data
     }
 }

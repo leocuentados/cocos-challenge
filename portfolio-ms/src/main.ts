@@ -8,7 +8,7 @@ dotenv.config();
 
 export const app = express();
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORTFOLIO_MS_PORT || 3002;
 
 app.use(express.json());
 app.use(urlencoded({ extended: true }));

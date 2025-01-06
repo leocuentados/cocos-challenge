@@ -12,12 +12,16 @@ export class PortfolioClient {
         this.baseUrl = baseUrl;
     }
 
-    async get(userId: string): Promise<Portfolio> {
-        const response = (await axios.get(`${this.baseUrl}?userId=${userId}`)).data;
+    async get(userId: number): Promise<Portfolio> {
+        const response = (await axios.get(`${this.baseUrl}/portfolio?userId=${userId}`)).data;
+        if (response === null) {
+            throw new AxiosError('Portfolio not found', '404');
+        }
         return new Portfolio(
             response.userId,
             response.portfolioId,
             response.availableMoneyAmount,
+            response.currentPrice,
             response.instruments
         );
     }

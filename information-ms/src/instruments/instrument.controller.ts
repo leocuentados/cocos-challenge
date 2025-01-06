@@ -1,4 +1,4 @@
-import { Controller, Get, Req } from '@nestjs/common';
+import { Controller, Get, Query, Req } from '@nestjs/common';
 import { Request } from 'express';
 import { Instrument } from './instrument.entity';
 import { InstrumentService } from './instrument.service';
@@ -8,7 +8,7 @@ export class InstrumentController {
     constructor(private instrumentService: InstrumentService) {}
 
     @Get('/search')
-    search(@Req() request: Request): Promise<Instrument[]> {
-        return this.instrumentService.searchByTickerOrNameLike(request.query.searchParam.toString());
+    search(@Query('searchParam') searchParam: string): Promise<Instrument[]> {
+        return this.instrumentService.searchByTickerOrNameLike(searchParam);
     }
 }

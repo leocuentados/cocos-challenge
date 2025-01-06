@@ -10,7 +10,7 @@ router.get("/portfolio", async (req, res, next) => {
   try {
     Joi.assert(userId, Joi.string().required());
     res.json(
-      await PortfolioControllerInstance.get(userId as string)
+      await PortfolioControllerInstance.get(parseInt(userId as string))
     );
   } catch (error: any) {
     if (error.details && error.details[0].message !== null && error.details[0]?.message !== undefined) {

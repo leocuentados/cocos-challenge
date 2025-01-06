@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import express, { NextFunction, urlencoded } from "express"; 
+import express, { urlencoded } from "express"; 
 import morgan from "morgan";
 import { exceptionHandler, routeNotFoundHandler } from "./config/exception-handler";
 import router from "./config/routes";
