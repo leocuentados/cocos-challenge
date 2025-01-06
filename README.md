@@ -5,9 +5,9 @@
  2. asegurarse de haber copiado el archivo `.env` en la raiz del proyecto provisto por mail
  3. ejecutar el comando `docker-compose up` desde la raiz del proyecto
 
-Todas las consideraciones tecnicas y de arquitectura fueron detalladas en el archivo RFC.md.
+Todas las consideraciones tecnicas y de arquitectura fueron detalladas en el archivo [RFC.md](/RFC.md).
 
-La documentacion provista de como interactuar con el sistema se encuentra detallada en el archivo API.md.
+La documentacion provista de como interactuar con el sistema se encuentra detallada en el archivo [API.md](/API.md).
 
 Se encuentra disponible una coleccion de postman para interactuar con el sistema en el archivo cocos.postman-collection.json (la misma incluye tambien tests funcionales).
 

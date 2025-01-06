@@ -1,5 +1,6 @@
 # Arquitectura
 
+![Grafico Arquitectura](./cocos-challenge-arq.png)
 ### Puntos clave
 * La decision de usar microservicios y orientarlo a eventos fue para que el sistema sea mas escalable y las acciones se encuentren desacopladas unas de otras y que puedan escalar independientemente, sin que compitan en recursos entre ellas (por ejemplo, el volumen de consultas que reciba para conocer el portfolio de los usuarios es distinto al volumen o el tipo de carga que implica crear ordenes y matchearlas entre si).
 * El usar SQS para la comunicacion entre servicios permite que si un servicio no esta disponible entonces la solicitud no se pierde, sino que queda persistida en el mensaje que viaja por la cola hasta que el sistema pueda procesarlo.
@@ -28,7 +29,7 @@
 - Mediante `cocos-api` hacemos una solicitud de creacion de orden. Este mismo verifica que la orden efectivamente pueda ser creada (es decir, que el usuario exista y que tenga la cantidad suficiente del instrumento en su portfolio en una venta o que tenga el dinero disponible para la compra). Para esta verificacion consulta el `portfolio-ms` y dependiendo el resultado genera o no eventos. Posteriormente en los pasos siguientes el resultado se vera impactado en el portfolio si la orden fue aceptada.
 - El `order-matching-ms` escucha eventos generados para crear ordenes e intentar matchear compras y ventas, dependiendo la orden:
     - El matcheo de ordenes se realiza con una nueva tabla `pending_orders` en postgreSQL, la cual es identica a la tabla `orders` provista pero con una columna más usada para matcheo de ordenes parciales llamada `pendingpartial` de tipo booleano.
-    - Las operaciones contra la nueva tabla se realizan con la opcion `FOR UPDATE SKIP LOCKED ` que marca las ordenes en una seleccion como bloqueadas para escritura y lectura, esto evita que dos ordenes entrantes al mismo tiempo intenten usar las mismas ordenes. Adicionalmente la tabla se configuro con la opcion `SET lock_timeout = '1s';` para que el bloqueo dure como maximo 1 segundo y mejorar la performance.
+    - Las operaciones contra la nueva tabla se realizan con la opcion `FOR UPDATE SKIP LOCKED` que marca las ordenes en una seleccion como bloqueadas para escritura y lectura, esto evita que dos ordenes entrantes al mismo tiempo intenten usar las mismas ordenes. Adicionalmente la tabla se configuro con la opcion `SET lock_timeout = '1s';` para que el bloqueo dure como maximo 1 segundo y mejorar la performance.
     - Si las ordenes son de tipo `MARKET` entonces se intentara ejecutar inmediatamente. Esto quiere decir, si logra matchear con el lado opuesto de la operacion, marcara la operacion como `FILLED`, de lo contrario si no puede hacerlo la marca como `REJECTED`.
     - Si las ordenes son de tipo `LIMIT` entonces intentara matchear con el lado opuesto de la operacion. Si se completa el match entonces todas las ordenes con las que matcheo son borradas de la tabla, en el caso de que no se complete entonces se inserta la orden en la tabla con el status `NEW` y las ordenes con las que intento matchear pero no logro completar son marcadas con `pendingpartial` en true para evitar que sean usadas en otro match, las mismas seran ejecutadas en la medida de que aparezcan ordenes que completen los parciales.
     - Las ordenes que logran efectivamente matchear (o tambien si fueron rechazadas) son enviadas a traves de un evento a otra SQS.
@@ -54,3 +55,6 @@
 
 **Que pasa si una persona realiza una orden de compra de tipo LIMIT que no logra ejecutarse inmediatamente y a continuacion realiza una orden de venta de tipo LIMIT del mismo instrumento?**
 - Actualmente el sistema no tiene forma de resolver automaticamente estos casos y podria generar bugs. Quedo out-of-scope de la solucion y deberia ser iterado a la brevedad.
+
+**Que pasa con las ordenes canceladas por el usuario?**
+- Como no se detallo el mecanismo de cancelacion de ordenes, se dejo su integracion en el sistema para iteraciones futuras.
