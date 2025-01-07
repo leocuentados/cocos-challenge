@@ -11,7 +11,7 @@ services:
       - common-net
     depends_on:
       - localstack
-    entrypoint: ["sh", "-c", "/scripts/wait-for-it.sh localstack 4566 -- /bin/sh -c 'your-original-command'"]
+    entrypoint: ["sh", "-c", "/scripts/wait-for-it.sh localstack 4566 && npm start"]
     volumes:
       - ./scripts/wait-for-it.sh:/scripts/wait-for-it.sh
     environment:
@@ -35,7 +35,7 @@ services:
       - localstack
     networks:
       - common-net
-    entrypoint: ["sh", "-c", "/scripts/wait-for-it.sh localstack 4566 -- /bin/sh -c 'your-original-command'"]
+    entrypoint: ["sh", "-c", "/scripts/wait-for-it.sh localstack 4566 && npm start"]
     volumes:
       - ./scripts/wait-for-it.sh:/scripts/wait-for-it.sh
     environment:
@@ -58,7 +58,7 @@ services:
       - localstack
     networks:
       - common-net
-    entrypoint: ["sh", "-c", "/scripts/wait-for-it.sh localstack 4566 -- /bin/sh -c 'your-original-command'"]
+    entrypoint: ["sh", "-c", "/scripts/wait-for-it.sh localstack 4566 && npm start"]
     volumes:
       - ./scripts/wait-for-it.sh:/scripts/wait-for-it.sh
     environment:
@@ -72,6 +72,10 @@ services:
       INFORMATION_MS_SQS_URL: ${INFORMATION_MS_SQS_URL}
       ORDER_MATCHING_MS_SQS_URL: ${ORDER_MATCHING_MS_SQS_URL}
       ORDER_MATCHING_MS_URL: ${ORDER_MATCHING_MS_URL}
+      AWS_SQS_URL: ${AWS_SQS_URL}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_REGION: ${AWS_REGION}
 
   information-ms:
     build:
@@ -83,7 +87,7 @@ services:
       - common-net
     depends_on:
       - localstack
-    entrypoint: ["sh", "-c", "/scripts/wait-for-it.sh localstack 4566 -- /bin/sh -c 'your-original-command'"]
+    entrypoint: ["sh", "-c", "/scripts/wait-for-it.sh localstack 4566 && npm start"]
     volumes:
       - ./scripts/wait-for-it.sh:/scripts/wait-for-it.sh
     environment:
@@ -105,6 +109,9 @@ services:
     image: localstack/localstack:latest
     ports:
       - 4566:4566
+    networks:
+      - common-net
+    restart: always
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:4566/_localstack/health"]
       interval: 30s
