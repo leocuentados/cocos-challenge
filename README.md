@@ -13,6 +13,13 @@ Se encuentra disponible una coleccion de postman para interactuar con el sistema
 
 Tener en cuenta que la base de datos provista anteriormente (ElephantSQL) va a dejar de funcionar a partir del 27 de enero de 2025, fecha a partir de la cual el sistema dejara de funcionar correctamente: https://www.elephantsql.com/blog/end-of-life-announcement.html.
 
+## Pasos para correr los tests funcionales
+1. Asegurarse de tener instalado Postman y ejecutarlo
+2. Importar la collection `cocos-challenge.postman_collection.json` disponible en el repositorio.
+3. Levantar el sistema.
+4. Hacer click derecho en la carpeta de la coleccion `Functional Tests` y elegir la opcion `Run Folder`. En la ventana que se despliega presionar el boton `Run Cocos Challenge`.
+Los tests funcionales son idempotentes y pueden correrse sin problemas siempre y cuando no se cree manualmente el usuario `5` ni se afecte manualmente al usuario `666` usando los endpoints provistos en la carpeta `Endpoints`.
+
 ## Troubleshooting
 
 ### docker-compose levanta un warning de variables en blanco

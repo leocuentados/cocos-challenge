@@ -7,278 +7,584 @@
 	},
 	"item": [
 		{
-			"name": "cocos-api",
+			"name": "Endpoints",
 			"item": [
 				{
-					"name": "portfolio",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:3000/api/portfolio?userId=2",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"portfolio"
-							],
-							"query": [
-								{
-									"key": "userId",
-									"value": "2"
+					"name": "cocos-api",
+					"item": [
+						{
+							"name": "portfolio",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/portfolio?userId=666",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"portfolio"
+									],
+									"query": [
+										{
+											"key": "userId",
+											"value": "666"
+										}
+									]
 								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "search instruments",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:3000/api/instruments/search?searchParam=GGAL",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"instruments",
-								"search"
-							],
-							"query": [
-								{
-									"key": "searchParam",
-									"value": "GGAL"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "create order MARKET",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"userId\": \"2\",\r\n    \"instrumentId\": \"25\",\r\n    \"side\": \"BUY\",\r\n    \"size\": 2,\r\n    \"type\": \"MARKET\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							},
+							"response": []
 						},
-						"url": {
-							"raw": "http://localhost:3000/api/orders",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"orders"
-							]
+						{
+							"name": "search instruments",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/instruments/search?searchParam=grupo",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"instruments",
+										"search"
+									],
+									"query": [
+										{
+											"key": "searchParam",
+											"value": "grupo"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create order MARKET",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"userId\": \"1\",\r\n    \"instrumentId\": \"1\",\r\n    \"side\": \"BUY\",\r\n    \"size\": 10000,\r\n    \"type\": \"MARKET\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/orders",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"orders"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create order LIMIT",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"userId\": \"2\",\r\n    \"instrumentId\": \"45\",\r\n    \"side\": \"BUY\",\r\n    \"size\": 1,\r\n    \"type\": \"LIMIT\",\r\n    \"limit\": 1\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/orders",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"orders"
+									]
+								}
+							},
+							"response": []
 						}
-					},
-					"response": []
+					]
 				},
 				{
-					"name": "create order LIMIT",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"userId\": \"2\",\r\n    \"instrumentId\": \"45\",\r\n    \"side\": \"BUY\",\r\n    \"size\": 1,\r\n    \"type\": \"LIMIT\",\r\n    \"limit\": 1\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
+					"name": "information-ms",
+					"item": [
+						{
+							"name": "cash-in/cash-out",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"side\": \"CASH_IN\",\r\n    \"size\": 100000,\r\n    \"userId\": 1\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3001/orders/money",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3001",
+									"path": [
+										"orders",
+										"money"
+									]
 								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:3000/api/orders",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"orders"
-							]
+							},
+							"response": []
 						}
-					},
-					"response": []
+					]
 				}
 			]
 		},
 		{
-			"name": "information-ms",
+			"name": "Functional Tests",
 			"item": [
 				{
-					"name": "get user by id",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:3001/users/1",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3001",
-							"path": [
-								"users",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "search instruments",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:3001/instruments/search?searchParam=grupo",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3001",
-							"path": [
-								"instruments",
-								"search"
-							],
-							"query": [
+					"name": "Test-001 search instruments",
+					"item": [
+						{
+							"name": "search instruments by name",
+							"event": [
 								{
-									"key": "searchParam",
-									"value": "grupo"
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"// Itera sobre todos los elementos del array y verifica que el nombre comience con \"Grupo\"\r",
+											"jsonData.forEach(item => {\r",
+											"    pm.test(`instrument ${item.id} has name starting with \"grupo\"`, function () {\r",
+											"         pm.expect(item.name).to.match(/^grupo/i);\r",
+											"    });\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
 								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "query marketdata",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"instrumentIds\": [\r\n        1,2,4\r\n    ]\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/instruments/search?searchParam=grupo",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"instruments",
+										"search"
+									],
+									"query": [
+										{
+											"key": "searchParam",
+											"value": "grupo"
+										}
+									]
 								}
-							}
+							},
+							"response": []
 						},
-						"url": {
-							"raw": "http://localhost:3001/marketdata/query",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3001",
-							"path": [
-								"marketdata",
-								"query"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "marketdata by ticker",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:3001/marketdata/GGAL",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3001",
-							"path": [
-								"marketdata",
-								"GGAL"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "cash-in/cash-out",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"side\": \"CASH_IN\",\r\n    \"size\": 100000,\r\n    \"userId\": 2\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:3001/orders/money",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3001",
-							"path": [
-								"orders",
-								"money"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "portfolio-ms",
-			"item": [
-				{
-					"name": "portfolio",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:3002/api/portfolio?userId=2",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3002",
-							"path": [
-								"api",
-								"portfolio"
-							],
-							"query": [
+						{
+							"name": "search instruments by ticker",
+							"event": [
 								{
-									"key": "userId",
-									"value": "2"
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"pm.test(`instrument search by specific ticker has exactly one result`, () => {\r",
+											"    pm.expect(jsonData.length).to.equal(1);\r",
+											"})\r",
+											"\r",
+											"// Itera sobre todos los elementos del array y verifica que el nombre comience con \"Grupo\"\r",
+											"jsonData.forEach(item => {\r",
+											"    pm.test(`instrument ${item.id} has ticker starting with \"GGAL\"`, function () {\r",
+											"         pm.expect(item.ticker).to.match(/^GGAL/); // Verifica el ticker, no el name\r",
+											"    });\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
 								}
-							]
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/instruments/search?searchParam=GGAL",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"instruments",
+										"search"
+									],
+									"query": [
+										{
+											"key": "searchParam",
+											"value": "GGAL"
+										}
+									]
+								}
+							},
+							"response": []
 						}
-					},
-					"response": []
+					]
+				},
+				{
+					"name": "Test-002 create order",
+					"item": [
+						{
+							"name": "create order 404 invalid user",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"pm.test(`when create order with not existent user then error 404`, () => {\r",
+											"    pm.expect(pm.response.code).to.equal(404);\r",
+											"    pm.expect(jsonData.message).to.equal(\"User 5 does not exists\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"userId\": \"5\",\r\n    \"instrumentId\": \"1\",\r\n    \"side\": \"BUY\",\r\n    \"size\": 1000,\r\n    \"type\": \"MARKET\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/orders",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"orders"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "setup01: cash-in test user",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"when cash-in money successfully then return 201\", () => {\r",
+											"    pm.expect(pm.response.code).to.equal(201);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"side\": \"CASH_IN\",\r\n    \"size\": 1,\r\n    \"userId\": 666\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3001/orders/money",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3001",
+									"path": [
+										"orders",
+										"money"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create order MARKET 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"pm.test(`when create order with not enough available money then error 400`, () => {\r",
+											"    pm.expect(pm.response.code).to.equal(400);\r",
+											"    pm.expect(jsonData.message).to.equal(\"Cant create order, available money or instrument size is not enough for the requested amount\"); // Asegúrate de que el mensaje sea el correcto\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"userId\": \"666\",\r\n    \"instrumentId\": \"29\",\r\n    \"side\": \"BUY\",\r\n    \"size\": 10000000,\r\n    \"type\": \"MARKET\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/orders",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"orders"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "setup02: cash-in test user",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"when cash-in money successfully then return 201\", () => {\r",
+											"    pm.expect(pm.response.code).to.equal(201);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"side\": \"CASH_IN\",\r\n    \"size\": 10000,\r\n    \"userId\": 666\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3001/orders/money",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3001",
+									"path": [
+										"orders",
+										"money"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create order MARKET 202",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"jsonData = pm.response.json();\r",
+											"\r",
+											"pm.test(`when create order type MARKET with existent user and available money then accept order`, () => {\r",
+											"    pm.expect(pm.response.code).to.equal(202);\r",
+											"    pm.expect(jsonData.order.instrumentId).to.equal(\"29\");\r",
+											"    pm.expect(jsonData.order.userId).to.equal(\"666\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"userId\": \"666\",\r\n    \"instrumentId\": \"29\",\r\n    \"side\": \"BUY\",\r\n    \"size\": 1,\r\n    \"type\": \"MARKET\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/orders",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"orders"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "portfolio not affected by rejected order and affected by cash-in",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"console.info('Wait for event messages transit.');\r",
+											"\r",
+											"setTimeout(() => {\r",
+											"    pm.test(`when create order successfuly but reject order in matching algorithm then dont change portfolio`, () => {\r",
+											"        pm.expect(jsonData.instruments.length).to.equal(0);\r",
+											"        pm.expect(jsonData.availableMoneyAmount).to.equal(10001);\r",
+											"    });\r",
+											"}, 4000)\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/portfolio?userId=666",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"portfolio"
+									],
+									"query": [
+										{
+											"key": "userId",
+											"value": "666"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "teardown01-02: cash-out test user",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"when cash-out money successfully then return 201\", () => {\r",
+											"    pm.expect(pm.response.code).to.equal(201);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"side\": \"CASH_OUT\",\r\n    \"size\": 10001,\r\n    \"userId\": 666\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3001/orders/money",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3001",
+									"path": [
+										"orders",
+										"money"
+									]
+								}
+							},
+							"response": []
+						}
+					]
 				}
 			]
 		}
