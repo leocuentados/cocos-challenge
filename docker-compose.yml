@@ -1,117 +1,118 @@
 version: '3.8'
-services:
-  # cocos-api:
-    # build:
-    #   context: ./cocos-api
-    #   dockerfile: Dockerfile
-    # ports:
-    #   - "${COCOS_API_PORT}:${COCOS_API_PORT}"
-    # networks:
-    #   - common-net
-    # environment:
-    #   PORT: ${COCOS_API_PORT}
-    #   NODE_ENV: ${NODE_ENV}
-    #   ORDER_VALIDATION_MS_URL: ${ORDER_VALIDATION_MS_URL}
-    #   INFORMATION_MS_URL: ${INFORMATION_MS_URL}
-    #   PORTFOLIO_MS_URL: ${PORTFOLIO_MS_URL}
-  # money-orders-ms:
-  #   build:
-  #     context: ./money-orders-ms
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "${MONEY_ORDERS_MS_PORT}:${MONEY_ORDERS_MS_PORT}"
-  #   # depends_on:
-  #   #   database:
-  #   #     condition: service_healthy
-  #   networks:
-  #     - common-net
-  #   environment:
-  #     PORT: ${MONEY_ORDERS_MS_PORT}
-  #     DB_PORT: ${DB_PORT}
-  #     DB_HOST: ${DB_HOST}
-  #     DB_NAME: ${DB_NAME}
-  #     DB_USERNAME: ${DB_USERNAME}
-  #     DB_PASSWORD: ${DB_PASSWORD}
-  #     NODE_ENV: ${NODE_ENV}
-  # order-validation-ms:
-  #   build:
-  #     context: ./order-validation-ms
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "${ORDER_VALIDATION_MS_PORT}:${ORDER_VALIDATION_MS_PORT}"
-  #   # depends_on:
-  #   #   database:
-  #   #     condition: service_healthy
-  #   networks:
-  #     - common-net
-  #   environment:
-  #     PORT: ${ORDER_VALIDATION_MS_PORT}
-  #     DB_PORT: ${DB_PORT}
-  #     DB_HOST: ${DB_HOST}
-  #     DB_NAME: ${DB_NAME}
-  #     DB_USERNAME: ${DB_USERNAME}
-  #     DB_PASSWORD: ${DB_PASSWORD}
-  #     NODE_ENV: ${NODE_ENV}
-  # portfolio-ms:
-  #   build:
-  #     context: ./portfolio-ms
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "${PORTFOLIO_MS_PORT}:${PORTFOLIO_MS_PORT}"
-  #   # depends_on:
-  #   #   database:
-  #   #     condition: service_healthy
-  #   networks:
-  #     - common-net
-  #   environment:
-  #     PORT: ${PORTFOLIO_MS_PORT}
-  #     DB_PORT: ${DB_PORT}
-  #     DB_HOST: ${DB_HOST}
-  #     DB_NAME: ${DB_NAME}
-  #     DB_USERNAME: ${DB_USERNAME}
-  #     DB_PASSWORD: ${DB_PASSWORD}
-  #     NODE_ENV: ${NODE_ENV}
-  # order-matching-ms:
-  #   build:
-  #     context: ./order-matching-ms
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "${ORDER_MATCHING_MS_PORT}:${ORDER_MATCHING_MS_PORT}"
-  #   # depends_on:
-  #   #   database:
-  #   #     condition: service_healthy
-  #   networks:
-  #     - common-net
-  #   environment:
-  #     PORT: ${ORDER_MATCHING_MS_PORT}
-  #     DB_PORT: ${DB_PORT}
-  #     DB_HOST: ${DB_HOST}
-  #     DB_NAME: ${DB_NAME}
-  #     DB_USERNAME: ${DB_USERNAME}
-  #     DB_PASSWORD: ${DB_PASSWORD}
-  #     NODE_ENV: ${NODE_ENV}
-  # information-ms:
-  #   build:
-  #     context: ./information-ms
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "${INFORMATION_MS_PORT}:${INFORMATION_MS_PORT}"
 
-  #   networks:
-  #     - common-net
-  #   environment:
-  #     PORT: ${INFORMATION_MS_PORT}
-  #     DB_PORT: ${DB_PORT}
-  #     DB_HOST: ${DB_HOST}
-  #     DB_NAME: ${DB_NAME}
-  #     DB_USERNAME: ${DB_USERNAME}
-  #     DB_PASSWORD: ${DB_PASSWORD}
-  #     NODE_ENV: ${NODE_ENV}
+services:
+  cocos-api:
+    build:
+      context: ./cocos-api
+      dockerfile: Dockerfile
+    ports:
+      - "${COCOS_API_PORT}:${COCOS_API_PORT}"
+    networks:
+      - common-net
+    depends_on:
+      - localstack
+    entrypoint: ["sh", "-c", "/scripts/wait-for-it.sh localstack 4566 -- /bin/sh -c 'your-original-command'"]
+    volumes:
+      - ./scripts/wait-for-it.sh:/scripts/wait-for-it.sh
+    environment:
+      PORT: ${COCOS_API_PORT}
+      NODE_ENV: ${NODE_ENV}
+      INFORMATION_MS_URL: ${INFORMATION_MS_URL}
+      PORTFOLIO_MS_URL: ${PORTFOLIO_MS_URL}
+      AWS_SQS_URL: ${AWS_SQS_URL}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_REGION: ${AWS_REGION}
+      ORDER_MATCHING_MS_SQS_URL: ${ORDER_MATCHING_MS_SQS_URL}
+
+  portfolio-ms:
+    build:
+      context: ./portfolio-ms
+      dockerfile: Dockerfile
+    ports:
+      - "${PORTFOLIO_MS_PORT}:${PORTFOLIO_MS_PORT}"
+    depends_on:
+      - localstack
+    networks:
+      - common-net
+    entrypoint: ["sh", "-c", "/scripts/wait-for-it.sh localstack 4566 -- /bin/sh -c 'your-original-command'"]
+    volumes:
+      - ./scripts/wait-for-it.sh:/scripts/wait-for-it.sh
+    environment:
+      DYNAMODB_ENDPOINT: ${DYNAMODB_ENDPOINT}
+      INFORMATION_MS_URL: ${INFORMATION_MS_URL}
+      PORTFOLIO_MS_SQS_URL: ${PORTFOLIO_MS_SQS_URL}
+      AWS_SQS_URL: ${AWS_SQS_URL}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_REGION: ${AWS_REGION}
+      NODE_ENV: ${NODE_ENV}
+
+  order-matching-ms:
+    build:
+      context: ./order-matching-ms
+      dockerfile: Dockerfile
+    ports:
+      - "${ORDER_MATCHING_MS_PORT}:${ORDER_MATCHING_MS_PORT}"
+    depends_on:
+      - localstack
+    networks:
+      - common-net
+    entrypoint: ["sh", "-c", "/scripts/wait-for-it.sh localstack 4566 -- /bin/sh -c 'your-original-command'"]
+    volumes:
+      - ./scripts/wait-for-it.sh:/scripts/wait-for-it.sh
+    environment:
+      ORDER_MATCHING_MS_PORT: ${ORDER_MATCHING_MS_PORT}
+      DB_PORT: ${DB_PORT}
+      DB_HOST: ${DB_HOST}
+      DB_NAME: ${DB_NAME}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      NODE_ENV: ${NODE_ENV}
+      INFORMATION_MS_SQS_URL: ${INFORMATION_MS_SQS_URL}
+      ORDER_MATCHING_MS_SQS_URL: ${ORDER_MATCHING_MS_SQS_URL}
+      ORDER_MATCHING_MS_URL: ${ORDER_MATCHING_MS_URL}
+
+  information-ms:
+    build:
+      context: ./information-ms
+      dockerfile: Dockerfile
+    ports:
+      - "${INFORMATION_MS_PORT}:${INFORMATION_MS_PORT}"
+    networks:
+      - common-net
+    depends_on:
+      - localstack
+    entrypoint: ["sh", "-c", "/scripts/wait-for-it.sh localstack 4566 -- /bin/sh -c 'your-original-command'"]
+    volumes:
+      - ./scripts/wait-for-it.sh:/scripts/wait-for-it.sh
+    environment:
+      INFORMATION_MS_PORT: ${INFORMATION_MS_PORT}
+      AWS_SQS_URL: ${AWS_SQS_URL}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_REGION: ${AWS_REGION}
+      PORTFOLIO_MS_SQS_URL: ${PORTFOLIO_MS_SQS_URL}
+      INFORMATION_MS_SQS_URL: ${INFORMATION_MS_SQS_URL}
+      NODE_ENV: ${NODE_ENV}
+      DB_PORT: ${DB_PORT}
+      DB_HOST: ${DB_HOST}
+      DB_NAME: ${DB_NAME}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+
   localstack:
     image: localstack/localstack:latest
     ports:
       - 4566:4566
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4566/_localstack/health"]
+      interval: 30s
+      retries: 5
+      start_period: 10s
+      timeout: 20s
     volumes:
       - ./localstack-setup.sh:/etc/localstack/init/ready.d/script.sh
+
 networks:
   common-net: {}

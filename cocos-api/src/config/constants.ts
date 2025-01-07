@@ -6,7 +6,7 @@ export const environment = {
     },
     sqs: {
         url: process.env.AWS_SQS_URL || 'http://sqs.us-east-1.localhost.localstack.cloud:4566',
-        order_matching_url: process.env.ORDER_MATCHING_SQS_URL || 'http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/order-matching-ms-queue',
+        order_matching_url: process.env.ORDER_MATCHING_MS_SQS_URL || 'http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/order-matching-ms-queue',
     },
     api: {
         portfolio: process.env.PORTFOLIO_MS_URL || 'http://localhost:3002/api',

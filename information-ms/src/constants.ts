@@ -1,5 +1,6 @@
 export const INSTRUMENT_SEARCH_TICKER_LIMIT = 5;
 export const INSTRUMENT_SEARCH_NAME_LIMIT = 5;
+export const MONEY_INSTRUMENT_ID = 66;
 
 export const environment = {
     db: {
@@ -17,6 +18,7 @@ export const environment = {
     sqs: {
         url: process.env.AWS_SQS_URL || 'http://sqs.us-east-1.localhost.localstack.cloud:4566',
         portfolio_ms_url: process.env.PORTFOLIO_MS_SQS_URL || 'http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/portfolio-ms-queue',
+        information_ms_url: process.env.INFORMATION_MS_SQS_URL || 'http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/information-ms-queue'
     },
     node_env: process.env.NODE_ENV,
 }

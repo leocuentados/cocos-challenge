@@ -2,9 +2,8 @@ import { Module } from '@nestjs/common';
 import { PendingOrderModule } from './pending-order/pending-order.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { environment } from './config/constants';
-import { PendingOrderEventProducerService } from './pending-order-event-producer/pending-order-event-producer.service';
-import { PendingOrderListenerModule } from './pending-order-listener/pending-order-listener.module';
 import { PendingOrderEventProducerModule } from './pending-order-event-producer/pending-order-event-producer.module';
+import { TrxUnitOfWorkModule } from './trx-unit-of-work/trx-unit-of-work.module';
 
 @Module({
   imports: [
@@ -17,10 +16,11 @@ import { PendingOrderEventProducerModule } from './pending-order-event-producer/
       password: environment.db.password,
       database: environment.db.database,
       autoLoadEntities: true,
-      synchronize: environment.node_env === 'DEV',
+      synchronize: false,
     }),
-    PendingOrderListenerModule,
     PendingOrderEventProducerModule,
+    TrxUnitOfWorkModule,
   ],
+  providers: []
 })
 export class AppModule {}

@@ -1,8 +1,8 @@
 export interface CreateOrderDto {
-    userId: number;
+    userId: string;
     instrumentId: number;
     size: number;
     side: string;
     type: string;
-    price: number;
+    limit?: number;
 }

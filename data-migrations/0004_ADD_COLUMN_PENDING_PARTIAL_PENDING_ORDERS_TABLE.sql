@@ -1,2 +1,0 @@
-ALTER TABLE pending_orders
-ADD COLUMN pendingpartial BOOLEAN DEFAULT FALSE;

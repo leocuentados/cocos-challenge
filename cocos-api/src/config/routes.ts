@@ -10,7 +10,7 @@ router.get("/portfolio", async (req, res, next) => {
   try {
     Joi.assert(userId, Joi.string().required());
     res.json(
-      await PortfolioControllerInstance.get(parseInt(userId as string))
+      await PortfolioControllerInstance.get(userId as string)
     );
   } catch (error: any) {
     if (error.details && error.details[0].message !== null && error.details[0]?.message !== undefined) {
@@ -42,9 +42,13 @@ router.post("/orders", async (req, res, next) => {
       userId: Joi.string().required(),
       instrumentId: Joi.string().required(),
       size: Joi.number().required(),
-      price: Joi.number().required(),
       side: Joi.string().valid("BUY", "SELL").required(),
       type: Joi.string().valid("MARKET", "LIMIT").required(),
+      limit: Joi.number().when('type', {
+        is: 'LIMIT',
+        then: Joi.required(),
+        otherwise: Joi.forbidden()
+      })
     }).required())
     res.status(202).json(
       await OrderControllerInstance.createOrder(order)

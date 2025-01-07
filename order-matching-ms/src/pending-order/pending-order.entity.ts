@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 
-@Entity({ name: 'pendingorders' })
+@Entity({ name: 'pending_orders' })
 export class PendingOrder {
     @PrimaryGeneratedColumn()
     id: number;
@@ -20,6 +20,6 @@ export class PendingOrder {
     status: string;
     @Column()
     datetime: Date;
-    @Column({ name: 'pendingpartial' })
-    pendingPartial: boolean;
+    @Column()
+    pricelimit: number;
 }

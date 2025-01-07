@@ -12,57 +12,73 @@ export class PortfolioService {
         private ddbRepository: PortfolioDDBRepository<PortfolioCache>
     ) {}
 
-    getPortfolioCache(userId: number): Promise<PortfolioCache | null> {
-        return this.ddbRepository.getByUserId(userId) || null;
+    async getPortfolioCache(userId: number): Promise<PortfolioCache | null> {
+        const portfolio = await this.ddbRepository.getByUserId(userId) || null;
+        
+        if (portfolio) {
+            portfolio.instruments = portfolio.instruments.map(i => {
+                return {
+                    instrumentId: parseInt(i.instrumentId.toString()),
+                    quantity: parseInt(i.quantity.toString()),
+                    originalPrice: parseFloat(i.quantity.toString()),
+                }
+            })
+        }
+        
+        return portfolio;
     }
 
-    async createOrUpdatePortfolioCache(userId: number, orders: Order[]): Promise<PortfolioCache> {
-        let portfolio = await this.getPortfolioCache(userId);
+    async createOrUpdatePortfolioCache(userIds: number[], orders: Order[]): Promise<void> {
+        for (const userId of userIds) {
+            let portfolio = await this.getPortfolioCache(userId);
 
-        if (!portfolio) {
-            portfolio = {
-                moneyAvailableAmount: 0,
-                userId: userId.toString(),
-                portfolioId: uuidv4(),
-                instruments: []
+            if (!portfolio) {
+                portfolio = {
+                    moneyAvailableAmount: 0,
+                    userId: userId.toString(),
+                    portfolioId: uuidv4(),
+                    instruments: []
+                }
             }
-        }
-
-        for (const order of orders) {
-            switch (order.side) {
-                case 'CASH_IN': portfolio.moneyAvailableAmount = portfolio.moneyAvailableAmount + order.size; break;
-                case 'CASH_OUT': portfolio.moneyAvailableAmount = portfolio.moneyAvailableAmount - order.size; break;
-                case 'BUY': {
-                    const currentInstrument = portfolio.instruments.find(i => i.instrumentId === order.instrumentId);
-                    if (currentInstrument) {
-                        currentInstrument.quantity = currentInstrument.quantity + order.size;
-                        currentInstrument.originalPrice = (currentInstrument.originalPrice+order.price) / 2;
-                        const instrumentIndex = portfolio.instruments.findIndex(i => i.instrumentId === order.instrumentId);
-                        portfolio.instruments[instrumentIndex] = currentInstrument;
-                    } else {
-                        portfolio.instruments.push(
-                            {
-                                instrumentId: order.instrumentId,
-                                quantity: order.size,
-                                originalPrice: order.price
+    
+            for (const order of orders.filter(order => parseInt(order.userId.toString()) === userId)) {
+                switch (order.side) {
+                    case 'CASH_IN': portfolio.moneyAvailableAmount = portfolio.moneyAvailableAmount + (order.size*order.price); break;
+                    case 'CASH_OUT': portfolio.moneyAvailableAmount = portfolio.moneyAvailableAmount - (order.size*order.price); break;
+                    case 'BUY': {
+                        const currentInstrument = portfolio.instruments.find(i => i.instrumentId === order.instrumentId);
+                        if (currentInstrument) {
+                            currentInstrument.quantity = currentInstrument.quantity + order.size;
+                            currentInstrument.originalPrice = (currentInstrument.originalPrice+order.price) / 2;
+                            const instrumentIndex = portfolio.instruments.findIndex(i => i.instrumentId === order.instrumentId);
+                            portfolio.instruments[instrumentIndex] = currentInstrument;
+                        } else {
+                            portfolio.instruments.push(
+                                {
+                                    instrumentId: order.instrumentId,
+                                    quantity: order.size,
+                                    originalPrice: order.price
+                                }
+                            )
+                        }
+                    }; break;
+                    case 'SELL': {
+                        if (portfolio.instruments.length > 0) {
+                            const currentInstrument = portfolio.instruments.find(i => i.instrumentId === order.instrumentId)!;
+                            const instrumentIndex = portfolio.instruments.findIndex(i => i.instrumentId === order.instrumentId)!;
+                            currentInstrument.quantity = currentInstrument.quantity - order.size;
+                            if (currentInstrument.quantity < 1) {
+                                portfolio.instruments.splice(instrumentIndex, 1)
+                            } else {
+                                portfolio.instruments[instrumentIndex] = currentInstrument;
                             }
-                        )
+                        }; break;
                     }
-                }; break;
-                case 'SELL': {
-                    const currentInstrument = portfolio.instruments.find(i => i.instrumentId === order.instrumentId)!;
-                    const instrumentIndex = portfolio.instruments.findIndex(i => i.instrumentId === order.instrumentId)!;
-                    currentInstrument.quantity = currentInstrument.quantity - order.size;
-                    if (currentInstrument.quantity < 1) {
-                        portfolio.instruments.splice(instrumentIndex, 1)
-                    } else {
-                        portfolio.instruments[instrumentIndex] = currentInstrument;
-                    }
-                }; break;
+                }
             }
+    
+            await this.ddbRepository.update(portfolio);
         }
-
-        return this.ddbRepository.update(portfolio);
     }
 
     async get(userId: number): Promise<Portfolio | null> {

@@ -5,8 +5,8 @@ export class OrderController {
     constructor(private orderService: OrderService) {}
     
     async createOrder(createOrderDto: CreateOrderDto) {
-        await this.orderService.createOrder(createOrderDto);
-        return { message: `Order created for user ${createOrderDto.userId}` };
+        const response = await this.orderService.createOrder(createOrderDto);
+        return { message: `Order created for user ${createOrderDto.userId}`, order: response };
     }
 }
 

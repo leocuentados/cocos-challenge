@@ -40,11 +40,23 @@ export class PortfolioQueueListener {
 
     async handleMessage(message: any, sqsClient: SQSClient, queueUrl: string) {
         const ordersMessage: { orders: Order[] } = JSON.parse(message.Body);
-
+        const userIds = Array.from(new Set(ordersMessage.orders.map(order => parseInt(order.userId.toString()))))
+        const orders = ordersMessage.orders.map(o => {
+            return {
+                id: o.id ? parseInt(o.id.toString()) : undefined,
+                size: parseInt(o.size.toString()),
+                side: o.side,
+                type: o.type,
+                datetime: o.datetime,
+                instrumentId: parseInt(o.instrumentId.toString()),
+                price: o.price,
+                userId: parseInt(o.userId.toString())
+            } as Order;
+        });
         await this.portfolioService.createOrUpdatePortfolioCache(
-            ordersMessage.orders[0].userId,
-            ordersMessage.orders
-        )
+            userIds,
+            orders
+        );
         await this.deleteMessage(message, sqsClient, queueUrl);
     }
 

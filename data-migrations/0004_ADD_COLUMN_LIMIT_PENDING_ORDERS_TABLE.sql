@@ -1,0 +1,2 @@
+ALTER TABLE pending_orders
+ADD COLUMN "orderlimit" NUMERIC(10, 2) DEFAULT NULL;

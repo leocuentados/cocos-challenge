@@ -1,11 +1,18 @@
 export enum OrderSide {
-    BUY, SELL, CASH_IN, CASH_OUT
+    BUY = 'BUY', 
+    SELL = 'SELL', 
+    CASH_IN = 'CASH_IN', 
+    CASH_OUT = 'CASH_OUT'
 }
 
 export enum OrderStatus {
-    NEW, REJECTED, FILLED, CANCELLED
+    NEW = 'NEW', 
+    REJECTED = 'REJECTED', 
+    FILLED = 'FILLED', 
+    CANCELLED = 'CANCELLED'
 }
 
 export enum OrderType {
-    MARKET, LIMIT
+    MARKET = 'MARKET', 
+    LIMIT = 'LIMIT'
 }

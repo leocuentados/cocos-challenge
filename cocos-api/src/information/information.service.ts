@@ -1,5 +1,6 @@
 import { InformationClient } from "./information.client";
 import { Instrument } from "./instrument";
+import { Marketdata } from "./marketdata";
 import { User } from "./user";
 
 export class InformationService {
@@ -8,7 +9,11 @@ export class InformationService {
         return this.informationClient.searchInstrument(searchParam);
     }
 
-    getUserById(userId: number): Promise<User | null> {
+    getUserById(userId: string): Promise<User | null> {
         return this.informationClient.getUserById(userId);
+    }
+
+    getMarketdata(instrumentId: string): Promise<Marketdata> {
+        return this.informationClient.getMarketdata(instrumentId);
     }
 }

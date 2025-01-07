@@ -81,15 +81,25 @@ curl --location '{COCOS_API_URL}/api/orders' \
     "instrumentId": "1",
     "side": "BUY",
     "size": 1,
-    "price": 1,
+    "limit": 1, // solo si type es "LIMIT"
     "type": "MARKET"
 }'
 ```
 * El side debe ser "BUY" o "SELL", el type "MARKET" o "LIMIT" y todos los campos son requeridos. Si no se cumple cualquiera retorna error 400.
+* Si la orden es de tipo "MARKET", el campo "limit" que retorna la respuesta representa el dinero maximo disponible del portfolio.
 * Respuesta 202:
 ```
 {
-    "message": "Order created for user 1"
+    "message": "Order created for user 1",
+    "order": {
+        "userId": "1",
+        "instrumentId": "54",
+        "size": 1000,
+        "side": "SELL",
+        "type": "MARKET",
+        "price": 229500,
+        "limit": 902000
+    }
 }
 ```
 * Respuesta 404 (si el usuario no existe):

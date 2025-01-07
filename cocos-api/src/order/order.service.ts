@@ -27,8 +27,9 @@ export class OrderService {
           });
     }
 
-    async createOrder(createOrderDto: CreateOrderDto): Promise<void> {
+    async createOrder(createOrderDto: CreateOrderDto) {
         const user = await this.informationService.getUserById(createOrderDto.userId);
+
 
         if (!user) {
             throw new CustomError(404, new Error(`User ${createOrderDto.userId} does not exists`))
@@ -36,28 +37,42 @@ export class OrderService {
 
         const portfolio = await this.portfolioService.get(createOrderDto.userId);
 
-        if (portfolio.canCreateOrder(createOrderDto)) {
-            return this.sendCreateOrderMessage(createOrderDto);
+        const price = parseInt((await this.informationService.getMarketdata(createOrderDto.instrumentId.toString())).close.toString());
+
+        if (portfolio.canCreateOrder(createOrderDto, price)) {
+            return this.sendCreateOrderMessage(
+                createOrderDto, 
+                portfolio.availableMoneyAmount,
+                createOrderDto.side === 'BUY'
+                    ? price
+                    : portfolio.getInstrument(parseInt(createOrderDto.instrumentId.toString()))!.currentPrice
+            );
         } else {
-            throw new CustomError(400, new Error('Cant create order, available money or instrument size is not enough for the requested amount'));
+            const badRequestMsg = createOrderDto.type === 'MARKET'
+                ? `Cant create order, available money or instrument size is not enough for the requested amount`
+                : `Cant create order, available money or instrument size is not enough or limit exceeds or is not enough for operation`
+            throw new CustomError(400, new Error(badRequestMsg));
         }
     }
 
-    private sendMessage(messageBody: string): Promise<any> {
-        return this.sqsProducer.send({ id: uuidv4(), body: messageBody });
+    private async sendMessage(messageBody: string): Promise<any> {
+        const res = await this.sqsProducer.send({ id: uuidv4(), body: messageBody });
+        console.info(`[OrderService] message sent to order-matching-ms-queue`);
+        return res;
     }
 
-    private sendCreateOrderMessage(createOrderDto: CreateOrderDto) {
-        return this.sendMessage(JSON.stringify({
-            order: {
-                userId: createOrderDto.userId,
-                instrumentId: createOrderDto.instrumentId,
-                size: createOrderDto.size,
-                side: createOrderDto.side,
-                type: createOrderDto.type,
-                price: createOrderDto.price
-            }
-        }))
+    private async sendCreateOrderMessage(createOrderDto: CreateOrderDto, moneyAvailableAmount: number, price: number) {
+        const order = {
+            userId: createOrderDto.userId,
+            instrumentId: createOrderDto.instrumentId,
+            size: createOrderDto.size,
+            side: createOrderDto.side,
+            type: createOrderDto.type,
+            price: price*createOrderDto.size,
+            limit: createOrderDto.type === 'LIMIT' ? createOrderDto.limit : moneyAvailableAmount
+        }
+        await this.sendMessage(JSON.stringify({ order: order }))
+        return order;
     }
   
 

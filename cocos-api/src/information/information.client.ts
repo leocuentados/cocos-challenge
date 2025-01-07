@@ -2,6 +2,7 @@ import axios from "axios";
 import { CustomError } from "../config/exception-handler";
 import { Instrument } from "./instrument";
 import { User } from "./user";
+import { Marketdata } from "./marketdata";
 
 export class InformationClient {
     private baseUrl: string;
@@ -23,7 +24,11 @@ export class InformationClient {
         )) : [];
     }
 
-    async getUserById(userId: number): Promise<User | null> {
+    async getUserById(userId: string): Promise<User | null> {
         return (await axios.get(`${this.baseUrl}/users/${userId}`)).data
+    }
+
+    async getMarketdata(instrumentId: string): Promise<Marketdata> {
+        return (await axios.post(`${this.baseUrl}/marketdata/query`, { instrumentIds: [instrumentId] })).data[0]
     }
 }

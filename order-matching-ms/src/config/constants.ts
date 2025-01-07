@@ -17,4 +17,5 @@ export const environment = {
         information_ms_url: process.env.INFORMATION_MS_SQS_URL || 'http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/information-ms-queue',
     },
     node_env: process.env.NODE_ENV || 'DEV',
+    url: process.env.ORDER_MATCHING_MS_URL || 'http://localhost:3003'
 }

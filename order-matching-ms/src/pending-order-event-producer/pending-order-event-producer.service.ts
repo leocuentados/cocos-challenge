@@ -24,7 +24,9 @@ export class PendingOrderEventProducerService {
         console.info(`[PendingOrderEventProducerService] ready to send messages to ${environment.sqs.information_ms_url}`)
     }
 
-    public sendMessage(messageBody: string): Promise<any> {
-        return this.informationMsQueue.send({ id: uuidv4(), body: messageBody });
+    public async sendMessage(messageBody: string) {
+        const res = await this.informationMsQueue.send({ id: uuidv4(), body: messageBody });
+        console.info(`[PendingOrderEventProducerService] message sent: ${messageBody}`)
+        return res;
       }
 }

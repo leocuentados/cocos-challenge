@@ -24,13 +24,21 @@ export class Portfolio {
         return this.instruments.find(i => i.instrumentId === instrumentId) || null
     }
 
-    canCreateOrder(createOrderDto: CreateOrderDto): boolean {
+    canCreateOrder(createOrderDto: CreateOrderDto, price: number): boolean {
+        let canCreate = true;
         if (createOrderDto.side === 'BUY') {
-            return this.availableMoneyAmount - createOrderDto.price >= 0;
+            canCreate = this.availableMoneyAmount - (price*createOrderDto.size) >= 0;
+            if (createOrderDto.type === 'LIMIT') {
+                canCreate = canCreate && price*createOrderDto.size < createOrderDto.limit!
+            }
         } else {
-            const instrument = this.getInstrument(createOrderDto.instrumentId);
-            return !!instrument && instrument.quantity - createOrderDto.size >= 0;
+            const instrument = this.getInstrument(parseInt(createOrderDto.instrumentId.toString()));
+            canCreate = !!instrument && instrument.quantity - createOrderDto.size >= 0;
+            if (createOrderDto.type === 'LIMIT') {
+                canCreate = canCreate && price*createOrderDto.size > createOrderDto.limit!;
+            }
         }
+        return canCreate;
     }
 }
 
